@@ -16,3 +16,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 
+from app.view import produto_novo
+from app.model import Produto
+
