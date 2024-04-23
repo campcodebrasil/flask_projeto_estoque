@@ -1,7 +1,6 @@
 from flask import jsonify, request
 from app import app
-from app.model import Produto
-
+from app.model import Produto, PessoaJuridica
 
 
 @app.route('/produto/novo/', methods=['POST'])
@@ -30,4 +29,28 @@ def produto_buscar():
   return jsonify(resposta)
 
 
+@app.route('/pj/novo/', methods=['POST'])
+def pj_novo():
+  try:
+    data = request.form
+    
+    pj = PessoaJuridica(
+      cnpj = data['cnpj'],
+      nome = data['nome'],
+      tipo = data['tipo']
+    )
+    pj.save()  
+    resposta = {'msg': 'Sucesso!!!', 'obs': 'Pessoa Jurídica Cadastra com Sucesso!!!'}
+  except Exception as e:
+    resposta = {'msg': 'ERRO', 'obs': e.args[0]}   
+
+  return jsonify(resposta)
+
+
+@app.route('/pj/buscar/todos/')
+def pj_buscar():
+  obj = PessoaJuridica.query.all()
+  data = [{'id': o.id, 'cnpj': o.cnpj, 'nome': o.nome, 'tipo': o.tipo} for o in obj]
+  resposta = {'msg': 'Sucesso', 'data': data}
+  return jsonify(resposta)
 

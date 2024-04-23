@@ -17,5 +17,5 @@ migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 
 from app.view import produto_novo
-from app.model import Produto
+from app.model import Produto, PessoaJuridica
 
