@@ -23,8 +23,8 @@ class PessoaJuridica(BaseModel, db.Model):
   cnpj = db.Column(db.Integer, unique=True, nullable=False)
   nome = db.Column(db.String(200), nullable=False)
   tipo = db.Column(db.Integer, nullable=False)
-  emitente_nf = db.relationship('NotaFiscal', backref='emitente', lazy=True)
-  remetente_nf = db.relationship('NotaFiscal', backref='remetente', lazy=True)
+  emitente_nf = db.relationship('NotaFiscal', foreign_keys='NotaFiscal.emitente_id', backref='emitente', lazy=True)
+  remetente_nf = db.relationship('NotaFiscal', foreign_keys='NotaFiscal.remetente_id', backref='remetente', lazy=True)
 
   def save(self):
     self.tipo = int(self.tipo)
