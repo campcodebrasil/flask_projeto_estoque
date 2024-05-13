@@ -1,5 +1,6 @@
-from app import db
-from datetime import datetime
+from app import db, bcrypt
+from datetime import datetime, timedelta
+from secrets import token_hex
 
 class BaseModel():
   id = db.Column(db.Integer, primary_key=True)
@@ -7,6 +8,39 @@ class BaseModel():
   def save(self):
     db.session.add(self)
     db.session.commit()
+
+class Usuario(BaseModel, db.Model):
+  username = db.Column(db.String(50), nullable=False) #, unique=True
+  password = db.Column(db.String(100), nullable=False)
+  admin = db.Column(db.Boolean, default=False)  
+  token = db.Column(db.String(200), nullable=False, default='$2b$12$xUAeoRthCAOWc7M5yKiF3.RFJPPbJpDK7NZHVdeX88.t/58l1ZY1m') 
+  validade_token = db.Column(db.DateTime, default=datetime.utcnow)
+
+  def create(self):
+    user = Usuario.query.filter_by(username=self.username)
+    if user.exists(): raise Exception('Username Já Utilizado')
+    self.password = bcrypt.generate_password_hash(self.password.encode('utf-8'))
+    print('senha:', self.password)
+    super().save()    
+    self.gerar_token()
+    super().save()    
+
+  def gerar_token(self): 
+    self.token = f"{self.id}{token_hex(24)}"
+    self.validade_token = datetime.now() + timedelta(days=7)  
+
+  def autenticar(self, username, password):
+    user = Usuario.query.filter_by(username=username)
+    if not user.exists(): raise Exception('Usuário não encontrado')
+
+    user = user.first()
+    
+
+  
+  def autenticar_token(token):
+    return False
+
+
 
 
 class Produto(BaseModel, db.Model):
